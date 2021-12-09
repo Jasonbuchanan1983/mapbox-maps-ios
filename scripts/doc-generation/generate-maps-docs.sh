@@ -4,11 +4,13 @@ set -euo pipefail
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 UTILS_PATH="$SCRIPT_DIR/../utils.sh"
+REPO_ROOT="$SCRIPT_DIR/../../"
 
 # shellcheck source=../utils.sh
 source "$UTILS_PATH"
 
-VERSION=${VERSION:-$(git_head_hash)}
+V_PREFIXED_VERSION_IF_EXISTS=${VERSION:+v$VERSION}
+VERSION=${V_PREFIXED_VERSION_IF_EXISTS:-$(git_head_hash)}
 DOCS_OUTPUT=${DOCS_OUTPUT:-"$SCRIPT_DIR/../../api-docs"}
 
 # Pass VERBOSE_LOGGER=/dev/stdout to print verbose logs on the screen
@@ -33,10 +35,10 @@ main() {
 
     step "Patch documentation to include external references"
     info "Download MapboxCoreMaps documentation"
-    download_coremaps_documentation "scripts/release/packager/versions.json" "$DOCS_OUTPUT/core"
+    download_coremaps_documentation "$REPO_ROOT/scripts/release/packager/versions.json" "$DOCS_OUTPUT/core"
 
     info "Download MapboxCommon documentation"
-    download_common_documentation "scripts/release/packager/versions.json" "$DOCS_OUTPUT/common"
+    download_common_documentation "$REPO_ROOT/scripts/release/packager/versions.json" "$DOCS_OUTPUT/common"
 
     info "Add dependency links to documentation"
     add_documentation_links "$DOCS_OUTPUT/index.html"
